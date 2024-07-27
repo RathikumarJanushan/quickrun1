@@ -8,7 +8,6 @@ class WorkingTimeView extends StatelessWidget {
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      // If user is not logged in, you might want to handle this case
       return Scaffold(
         body: Center(
           child: Text('User not logged in'),
@@ -36,7 +35,7 @@ class WorkingTimeView extends StatelessWidget {
           // Display data if available
           if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
             return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+              scrollDirection: Axis.vertical,
               child: DataTable(
                 columns: [
                   DataColumn(label: Text('Date and Time')),
