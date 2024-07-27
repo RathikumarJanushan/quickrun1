@@ -195,6 +195,12 @@ class UserOptionsPage extends StatelessWidget {
         title: Text(userName),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background_image.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(

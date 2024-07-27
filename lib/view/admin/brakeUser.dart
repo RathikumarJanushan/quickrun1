@@ -21,6 +21,12 @@ class brakepage extends StatelessWidget {
         title: Text(userName),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background_image.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
@@ -30,9 +36,8 @@ class brakepage extends StatelessWidget {
               SizedBox(height: 12.0),
               ElevatedButton(
                 onPressed: () async {
-                  await _updateAvailability(userId, 'break', userEmail);
-
-                  // Pass userEmail parameter
+                  await _updateAvailability(
+                      userId, 'break', userEmail); // Pass userEmail parameter
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.all(16.0),
