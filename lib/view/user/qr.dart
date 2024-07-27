@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:quickrun1/view/user/home_screen.dart';
 
 class qrCode extends StatelessWidget {
   @override
@@ -74,11 +73,10 @@ class _QRViewExampleState extends State<QRViewExample> {
       if (result?.code == 'start') {
         await checkAvailabilityAndPerformAction("start", context);
         await _StartTime("start");
-        // Navigate to HomeScreen
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => HomeScreen()),
+        // );
       }
     });
   }
