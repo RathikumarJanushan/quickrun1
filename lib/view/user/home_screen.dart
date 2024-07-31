@@ -6,6 +6,7 @@ import 'package:quickrun1/auth/auth_service.dart';
 import 'package:quickrun1/common_widget/round_button.dart';
 import 'package:quickrun1/view/on_boarding/startup_view.dart';
 import 'package:quickrun1/view/user/calculation.dart';
+import 'package:quickrun1/view/user/qr.dart';
 
 import 'package:quickrun1/widgets/button.dart' as DeleveryButton;
 
@@ -118,6 +119,10 @@ class HomeScreen extends StatelessWidget {
                       duration: Duration(seconds: 2),
                     ));
                   } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => qrCode()),
+                    );
                     // If availability is not "start", proceed with action
                   }
                 },

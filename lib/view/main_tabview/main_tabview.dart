@@ -59,19 +59,19 @@ class _MainTabViewState extends State<MainTabView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              TabButton(
-                  title: "Start",
-                  icon: "assets/img/tab_order.png",
-                  onTap: () {
-                    if (selctTab != 1) {
-                      selctTab = 1;
-                      selectPageView = qrCode();
-                    }
-                    if (mounted) {
-                      setState(() {});
-                    }
-                  },
-                  isSelected: selctTab == 1),
+              // TabButton(
+              //     title: "Start",
+              //     icon: "assets/img/tab_order.png",
+              //     onTap: () {
+              //       if (selctTab != 1) {
+              //         selctTab = 1;
+              //         selectPageView = qrCode();
+              //       }
+              //       if (mounted) {
+              //         setState(() {});
+              //       }
+              //     },
+              //     isSelected: selctTab == 1),
               const SizedBox(
                 width: 100,
                 height: 100,

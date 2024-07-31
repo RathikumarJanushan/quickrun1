@@ -36,24 +36,30 @@ class WorkingTimeView extends StatelessWidget {
           // Display data if available
           if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
             return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: [
-                  DataColumn(label: Text('Date and Time')),
-                  DataColumn(label: Text('Working Hours')),
+              child: Column(
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: [
+                        DataColumn(label: Text('Date and Time')),
+                        DataColumn(label: Text('Working Hours')),
+                      ],
+                      rows: snapshot.data!.docs.map((doc) {
+                        var data = doc.data() as Map<String, dynamic>;
+                        var date = (data['date'] as Timestamp).toDate();
+                        var formattedDate =
+                            DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
+                        var workingHours =
+                            '${data['differenceInHours']} hours ${data['differenceInMinutes']} minutes';
+                        return DataRow(cells: [
+                          DataCell(Text(formattedDate)),
+                          DataCell(Text(workingHours)),
+                        ]);
+                      }).toList(),
+                    ),
+                  ),
                 ],
-                rows: snapshot.data!.docs.map((doc) {
-                  var data = doc.data() as Map<String, dynamic>;
-                  var date = (data['date'] as Timestamp).toDate();
-                  var formattedDate =
-                      DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
-                  var workingHours =
-                      '${data['differenceInHours']} hours ${data['differenceInMinutes']} minutes';
-                  return DataRow(cells: [
-                    DataCell(Text(formattedDate)),
-                    DataCell(Text(workingHours)),
-                  ]);
-                }).toList(),
               ),
             );
           } else {

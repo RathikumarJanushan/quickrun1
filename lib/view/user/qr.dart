@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:quickrun1/view/main_tabview/main_tabview.dart';
 
 class qrCode extends StatelessWidget {
   @override
@@ -73,10 +74,12 @@ class _QRViewExampleState extends State<QRViewExample> {
       if (result?.code == 'start') {
         await checkAvailabilityAndPerformAction("start", context);
         await _StartTime("start");
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => HomeScreen()),
-        // );
+
+        // Navigate to the MainTabView page immediately
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainTabView()),
+        );
       }
     });
   }
