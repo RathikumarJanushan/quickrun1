@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class calculation extends StatelessWidget {
+class Calculation extends StatelessWidget {
   final String userName;
   final String docId;
   final String userId;
   final String userEmail;
 
-  calculation({
+  Calculation({
     Key? key,
     required this.userName,
     required this.userId,
@@ -18,16 +18,19 @@ class calculation extends StatelessWidget {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  @override
-
   // Function to save the difference to Firestore
-  void saveDifference(Duration difference) {
+  void saveDifference(BuildContext context, Duration difference) {
     DateTime currentDate = DateTime.now();
     FirebaseFirestore.instance.collection('workingtime').add({
       'userId': userId,
       'date': currentDate,
       'differenceInHours': difference.inHours,
       'differenceInMinutes': difference.inMinutes.remainder(60)
+    }).then((_) {
+      // Navigate to adminHome page after saving the data
+      Future.delayed(Duration(seconds: 1), () {
+        Navigator.pushReplacementNamed(context, '/adminhome');
+      });
     });
   }
 
@@ -43,8 +46,8 @@ class calculation extends StatelessWidget {
               .collection('StartTime')
               .doc(userId)
               .snapshots(),
-          builder: (context, AsyncSnapshot<DocumentSnapshot>? snapshot) {
-            if (snapshot == null || !snapshot.hasData) {
+          builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (!snapshot.hasData) {
               return CircularProgressIndicator();
             }
             var data = snapshot.data!.data() as Map<String, dynamic>?;
@@ -63,7 +66,7 @@ class calculation extends StatelessWidget {
             var differenceInMinutes = difference.inMinutes.remainder(60);
 
             // Save the difference to Firestore
-            saveDifference(difference);
+            saveDifference(context, difference);
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,

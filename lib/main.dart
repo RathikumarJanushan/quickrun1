@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:quickrun1/view/admin/adminhome_screen.dart';
+
 import 'package:quickrun1/view/login/welcome_view.dart';
 import 'package:quickrun1/view/on_boarding/startup_view.dart';
 import 'package:quickrun1/view/user/home_screen.dart';
@@ -28,6 +30,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const StartupView(),
         '/home': (context) => const HomeScreen(),
         '/login': (context) => const WelcomeView(),
+        '/adminhome': (context) => const AdminhomeomeScreen(),
         // Define other routes here
       },
     );

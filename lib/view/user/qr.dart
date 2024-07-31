@@ -107,7 +107,7 @@ class _QRViewExampleState extends State<QRViewExample> {
           if (availability == 'break') {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text('Cannot perform action. Availability is on break.'),
-              duration: Duration(seconds: 2),
+              duration: Duration(seconds: 1),
             ));
           } else {
             await _updateAvailability(action);

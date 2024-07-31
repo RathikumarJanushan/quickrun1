@@ -1,12 +1,12 @@
-import 'package:quickrun1/view/admin/oderpage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:quickrun1/view/admin/oderpage.dart';
 import 'package:quickrun1/view/admin/brakeUser.dart';
 import 'package:quickrun1/view/admin/cal2.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class adminHomeScreen extends StatelessWidget {
+  const adminHomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +110,7 @@ class HomeScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => brakepage(
+                  builder: (context) => BrakePage(
                     userName: userName,
                     userId: doc.id,
                     userEmail: userEmail,
@@ -197,7 +197,7 @@ class UserOptionsPage extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('images/background_image.jpg'),
+            image: AssetImage('assets/img/splash_bg.png"'),
             fit: BoxFit.cover,
           ),
         ),
@@ -235,7 +235,7 @@ class UserOptionsPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => calculation(
+                      builder: (context) => Calculation(
                         userName: userName,
                         userId: userId,
                         userEmail: userEmail,
@@ -260,7 +260,7 @@ class UserOptionsPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => calculation(
+                      builder: (context) => Calculation(
                         userName: userName,
                         userId: userId,
                         userEmail: userEmail,
@@ -291,46 +291,41 @@ class UserOptionsPage extends StatelessWidget {
       String userId, String availability, String userEmail) async {
     // Added userEmail parameter
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final userRef =
-            FirebaseFirestore.instance.collection('available').doc(userId);
+      final userRef =
+          FirebaseFirestore.instance.collection('available').doc(userId);
 
-        // Check if the document exists before updating
-        final userDoc = await userRef.get();
-        if (userDoc.exists) {
-          await userRef.update({
-            'available': availability,
-            'email': userEmail, // Include clicked user's email when updating
-          });
-          print('Availability updated successfully!');
-        } else {
-          // Handle the case where the document does not exist
-          print('User document not found. Creating new document...');
-          await userRef.set({
-            'available': availability,
-            'email': userEmail, // Include clicked user's email when creating
-          });
-          print('User document created with availability: $availability');
-        }
-
-        // Example email sending code (you need to implement your own email sending logic)
-        // Send email based on the availability status
-        switch (availability) {
-          case 'start':
-            print('Send email for availability started to $userEmail');
-            break;
-          case 'end':
-            print('Send email for availability ended to $userEmail');
-            break;
-          case 'break':
-            print('Send email for break to $userEmail');
-            break;
-          default:
-            print('Unknown availability status');
-        }
+      // Check if the document exists before updating
+      final userDoc = await userRef.get();
+      if (userDoc.exists) {
+        await userRef.update({
+          'available': availability,
+          'email': userEmail, // Include clicked user's email when updating
+        });
+        print('Availability updated successfully!');
       } else {
-        print('User not logged in!');
+        // Handle the case where the document does not exist
+        print('User document not found. Creating new document...');
+        await userRef.set({
+          'available': availability,
+          'email': userEmail, // Include clicked user's email when creating
+        });
+        print('User document created with availability: $availability');
+      }
+
+      // Example email sending code (you need to implement your own email sending logic)
+      // Send email based on the availability status
+      switch (availability) {
+        case 'start':
+          print('Send email for availability started to $userEmail');
+          break;
+        case 'end':
+          print('Send email for availability ended to $userEmail');
+          break;
+        case 'break':
+          print('Send email for break to $userEmail');
+          break;
+        default:
+          print('Unknown availability status');
       }
     } catch (e) {
       print('Error updating availability: $e');
