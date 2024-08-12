@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCkWvryM9faR9obP5TXF5tNjiNg7n0_9_I',
-    appId: '1:248136644221:android:75220a213732bc84362314',
-    messagingSenderId: '248136644221',
-    projectId: 'delivery-cc1c0',
-    storageBucket: 'delivery-cc1c0.appspot.com',
+    apiKey: 'AIzaSyAi8VZFvY6LzM0T-eBEnh2QeqtXuzHGG48',
+    appId: '1:1089275649942:android:3260d0d7fdfe4e366147b7',
+    messagingSenderId: '1089275649942',
+    projectId: 'quicklast-5cac4',
+    storageBucket: 'quicklast-5cac4.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDFHytcRNUO6nWAKBnbz9kjrL_KwiS7t7Y',
-    appId: '1:248136644221:ios:98aa5de0a1491282362314',
-    messagingSenderId: '248136644221',
-    projectId: 'delivery-cc1c0',
-    storageBucket: 'delivery-cc1c0.appspot.com',
+    apiKey: 'AIzaSyDLNLhG5OuuNTR0s3llIze5OSqtBVkXsJI',
+    appId: '1:1089275649942:ios:c38a38b5afb96fc06147b7',
+    messagingSenderId: '1089275649942',
+    projectId: 'quicklast-5cac4',
+    storageBucket: 'quicklast-5cac4.appspot.com',
     iosBundleId: 'com.example.quickrun1',
   );
+
 }
