@@ -1,32 +1,13 @@
 {
   "project_info": {
-    "project_number": "1089275649942",
-    "project_id": "quicklast-5cac4",
-    "storage_bucket": "quicklast-5cac4.appspot.com"
+    "project_number": "525508908544",
+    "project_id": "quicktime-d85b1",
+    "storage_bucket": "quicktime-d85b1.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1089275649942:android:cce778949ed3e66f6147b7",
-        "android_client_info": {
-          "package_name": "com.example.quickru"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAi8VZFvY6LzM0T-eBEnh2QeqtXuzHGG48"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1089275649942:android:3260d0d7fdfe4e366147b7",
+        "mobilesdk_app_id": "1:525508908544:android:9ad1e396f461e16ad42ae5",
         "android_client_info": {
           "package_name": "com.example.quickrun1"
         }
@@ -34,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAi8VZFvY6LzM0T-eBEnh2QeqtXuzHGG48"
+          "current_key": "AIzaSyCTofwkqWMO2pq0TIJtEBfS7BLlA7R2OVA"
         }
       ],
       "services": {
