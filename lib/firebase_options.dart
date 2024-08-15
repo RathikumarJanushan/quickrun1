@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAi8VZFvY6LzM0T-eBEnh2QeqtXuzHGG48',
-    appId: '1:1089275649942:android:3260d0d7fdfe4e366147b7',
-    messagingSenderId: '1089275649942',
-    projectId: 'quicklast-5cac4',
-    storageBucket: 'quicklast-5cac4.appspot.com',
+    apiKey: 'AIzaSyCTofwkqWMO2pq0TIJtEBfS7BLlA7R2OVA',
+    appId: '1:525508908544:android:9ad1e396f461e16ad42ae5',
+    messagingSenderId: '525508908544',
+    projectId: 'quicktime-d85b1',
+    storageBucket: 'quicktime-d85b1.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDLNLhG5OuuNTR0s3llIze5OSqtBVkXsJI',
-    appId: '1:1089275649942:ios:c38a38b5afb96fc06147b7',
-    messagingSenderId: '1089275649942',
-    projectId: 'quicklast-5cac4',
-    storageBucket: 'quicklast-5cac4.appspot.com',
+    apiKey: 'AIzaSyAUlTNhzkTcVQiHXNaiotPR6TooWMqTcIM',
+    appId: '1:525508908544:ios:2272793ab29651bcd42ae5',
+    messagingSenderId: '525508908544',
+    projectId: 'quicktime-d85b1',
+    storageBucket: 'quicktime-d85b1.appspot.com',
     iosBundleId: 'com.example.quickrun1',
   );
 

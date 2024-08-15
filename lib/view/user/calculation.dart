@@ -23,14 +23,17 @@ class _FirestoreExampleState extends State<FirestoreExample> {
     });
   }
 
-  // Function to save the difference to Firestore
-  void saveDifference(Duration difference) {
+  // Function to save the difference along with start and end times to Firestore
+  void saveDifference(
+      DateTime startTime, DateTime endTime, Duration difference) {
     DateTime currentDate = DateTime.now();
     FirebaseFirestore.instance.collection('workingtime').add({
       'userId': userId,
       'date': currentDate,
+      'startTime': startTime,
+      'endTime': endTime,
       'differenceInHours': difference.inHours,
-      'differenceInMinutes': difference.inMinutes.remainder(60)
+      'differenceInMinutes': difference.inMinutes.remainder(60),
     });
   }
 
@@ -59,19 +62,22 @@ class _FirestoreExampleState extends State<FirestoreExample> {
             var formattedStartTime = DateTime.fromMillisecondsSinceEpoch(
                 startTimeTimestamp.seconds * 1000);
 
+            // Set the current time as end time
+            var endTime = DateTime.now();
+
             // Calculate the difference in hours and minutes between current time and start time
-            var currentTime = DateTime.now();
-            var difference = currentTime.difference(formattedStartTime);
+            var difference = endTime.difference(formattedStartTime);
             var differenceInHours = difference.inHours;
             var differenceInMinutes = difference.inMinutes.remainder(60);
 
-            // Save the difference to Firestore
-            saveDifference(difference);
+            // Save the start time, end time, and difference to Firestore
+            saveDifference(formattedStartTime, endTime, difference);
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Start Time: $formattedStartTime'),
+                Text('End Time: $endTime'),
                 Text(
                   'Working Time: $differenceInHours hours and $differenceInMinutes minutes',
                 ),

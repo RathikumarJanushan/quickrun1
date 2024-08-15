@@ -8,7 +8,7 @@ class WorkingTimeView extends StatelessWidget {
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      // If user is not logged in, you might want to handle this case
+      // If user is not logged in, handle this case
       return Scaffold(
         body: Center(
           child: Text('User not logged in'),
@@ -43,17 +43,40 @@ class WorkingTimeView extends StatelessWidget {
                     child: DataTable(
                       columns: [
                         DataColumn(label: Text('Date and Time')),
+                        DataColumn(label: Text('Start Time')),
+                        DataColumn(label: Text('End Time')),
                         DataColumn(label: Text('Working Hours')),
                       ],
                       rows: snapshot.data!.docs.map((doc) {
                         var data = doc.data() as Map<String, dynamic>;
-                        var date = (data['date'] as Timestamp).toDate();
-                        var formattedDate =
-                            DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
-                        var workingHours =
-                            '${data['differenceInHours']} hours ${data['differenceInMinutes']} minutes';
+
+                        // Parse the date, startTime, and endTime, with null checks
+                        var date = (data['date'] as Timestamp?)?.toDate();
+                        var formattedDate = date != null
+                            ? DateFormat('yyyy-MM-dd HH:mm:ss').format(date)
+                            : 'N/A';
+
+                        var startTime =
+                            (data['startTime'] as Timestamp?)?.toDate();
+                        var formattedStartTime = startTime != null
+                            ? DateFormat('HH:mm:ss').format(startTime)
+                            : 'N/A';
+
+                        var endTime = (data['endTime'] as Timestamp?)?.toDate();
+                        var formattedEndTime = endTime != null
+                            ? DateFormat('HH:mm:ss').format(endTime)
+                            : 'N/A';
+
+                        var workingHours = data
+                                    .containsKey('differenceInHours') &&
+                                data.containsKey('differenceInMinutes')
+                            ? '${data['differenceInHours']} hours ${data['differenceInMinutes']} minutes'
+                            : 'N/A';
+
                         return DataRow(cells: [
                           DataCell(Text(formattedDate)),
+                          DataCell(Text(formattedStartTime)),
+                          DataCell(Text(formattedEndTime)),
                           DataCell(Text(workingHours)),
                         ]);
                       }).toList(),

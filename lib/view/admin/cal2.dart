@@ -19,13 +19,16 @@ class Calculation extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Function to save the difference to Firestore
-  void saveDifference(BuildContext context, Duration difference) {
+  void saveDifference(BuildContext context, Duration difference,
+      DateTime startTime, DateTime endTime) {
     DateTime currentDate = DateTime.now();
     FirebaseFirestore.instance.collection('workingtime').add({
       'userId': userId,
       'date': currentDate,
+      'startTime': startTime,
+      'endTime': endTime,
       'differenceInHours': difference.inHours,
-      'differenceInMinutes': difference.inMinutes.remainder(60)
+      'differenceInMinutes': difference.inMinutes.remainder(60),
     }).then((_) {
       // Navigate to adminHome page after saving the data
       Future.delayed(Duration(seconds: 1), () {
@@ -65,8 +68,9 @@ class Calculation extends StatelessWidget {
             var differenceInHours = difference.inHours;
             var differenceInMinutes = difference.inMinutes.remainder(60);
 
-            // Save the difference to Firestore
-            saveDifference(context, difference);
+            // Save the difference along with StartTime and EndTime to Firestore
+            saveDifference(
+                context, difference, formattedStartTime, currentTime);
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,

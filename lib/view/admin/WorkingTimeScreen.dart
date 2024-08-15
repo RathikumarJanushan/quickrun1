@@ -19,6 +19,11 @@ class _WorkingTimeScreenState extends State<WorkingTimeScreen> {
   Future<List<Map<String, dynamic>>>? workingTimeFuture;
   Map<String, dynamic>? userDetails;
 
+  // New variables for editing start and end times
+  DateTime? editedStartTime;
+  DateTime? editedEndTime;
+  String? documentIdToEdit; // Store the ID of the document being edited
+
   @override
   void initState() {
     super.initState();
@@ -44,12 +49,21 @@ class _WorkingTimeScreenState extends State<WorkingTimeScreen> {
         .get();
 
     return querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
+        .map((doc) => {
+              'id': doc.id, // Include document ID for editing
+              ...doc.data() as Map<String, dynamic>
+            })
         .where((data) {
       Timestamp timestamp = data['date'];
       DateTime date = timestamp.toDate();
       return date.month == month;
-    }).toList();
+    }).toList()
+      ..sort((a, b) {
+        // Sort by date
+        return (a['date'] as Timestamp)
+            .toDate()
+            .compareTo((b['date'] as Timestamp).toDate());
+      });
   }
 
   Future<void> _generatePdf(List<Map<String, dynamic>> data, int month) async {
@@ -57,8 +71,8 @@ class _WorkingTimeScreenState extends State<WorkingTimeScreen> {
 
     double totalHours = 0;
     data.forEach((record) {
-      totalHours += record['differenceInHours'];
-      totalHours += record['differenceInMinutes'] / 60;
+      totalHours += record['differenceInHours'].toDouble();
+      totalHours += record['differenceInMinutes'] / 60.0;
     });
 
     pdf.addPage(
@@ -80,12 +94,30 @@ class _WorkingTimeScreenState extends State<WorkingTimeScreen> {
                   style: pw.TextStyle(fontSize: 18)),
               pw.SizedBox(height: 16),
               pw.Table.fromTextArray(
-                headers: ['Date', 'Hours', 'Minutes', 'UserID'],
+                headers: [
+                  'Date & Time',
+                  'Start Time',
+                  'End Time',
+                  'Hours',
+                  'Minutes',
+                  'UserID'
+                ],
                 data: data.map((record) {
                   Timestamp timestamp = record['date'];
                   DateTime date = timestamp.toDate();
+                  Timestamp? startTime = record['startTime'];
+                  Timestamp? endTime = record['endTime'];
+
                   return [
-                    DateFormat.yMMMd().add_jm().format(date),
+                    DateFormat('MMMM d, yyyy h:mm:ss a').format(date),
+                    startTime != null
+                        ? DateFormat('MMMM d, yyyy h:mm:ss a')
+                            .format(startTime.toDate())
+                        : 'N/A',
+                    endTime != null
+                        ? DateFormat('MMMM d, yyyy h:mm:ss a')
+                            .format(endTime.toDate())
+                        : 'N/A',
                     record['differenceInHours'].toString(),
                     record['differenceInMinutes'].toString(),
                     record['userId'].toString(),
@@ -104,6 +136,33 @@ class _WorkingTimeScreenState extends State<WorkingTimeScreen> {
 
     await Printing.layoutPdf(
         onLayout: (PdfPageFormat format) async => pdf.save());
+  }
+
+  // Function to update Firestore document with new start and end times
+  Future<void> _updateWorkingTime(String docId) async {
+    if (documentIdToEdit != null &&
+        editedStartTime != null &&
+        editedEndTime != null) {
+      // Calculate difference in hours and minutes
+      Duration difference = editedEndTime!.difference(editedStartTime!);
+      double differenceInHours = difference.inHours.toDouble();
+      int differenceInMinutes = difference.inMinutes.remainder(60);
+
+      await FirebaseFirestore.instance
+          .collection('workingtime')
+          .doc(docId)
+          .update({
+        'startTime': Timestamp.fromDate(editedStartTime!),
+        'endTime': Timestamp.fromDate(editedEndTime!),
+        'differenceInHours': differenceInHours,
+        'differenceInMinutes': differenceInMinutes,
+      });
+      setState(() {
+        editedStartTime = null;
+        editedEndTime = null;
+        documentIdToEdit = null; // Clear the editing document ID
+      });
+    }
   }
 
   @override
@@ -168,48 +227,91 @@ class _WorkingTimeScreenState extends State<WorkingTimeScreen> {
                             "No working time records found for the selected month"));
                   } else {
                     final workingTimeData = snapshot.data!;
-                    double totalHours = 0;
+                    int totalMinutes = 0;
 
                     workingTimeData.forEach((record) {
-                      totalHours += record['differenceInHours'];
-                      totalHours += record['differenceInMinutes'] / 60;
+                      int hours = (record['differenceInHours'] is double
+                              ? (record['differenceInHours'] as double).toInt()
+                              : record['differenceInHours'] as int) *
+                          60;
+                      int minutes = (record['differenceInMinutes'] is double
+                          ? (record['differenceInMinutes'] as double).toInt()
+                          : record['differenceInMinutes'] as int);
+
+                      totalMinutes += hours + minutes;
                     });
+
+                    int hours = totalMinutes ~/ 60;
+                    int minutes = totalMinutes % 60;
 
                     return Column(
                       children: [
                         Expanded(
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            child: DataTable(
-                              columns: [
-                                DataColumn(label: Text("Date")),
-                                DataColumn(label: Text("Hours")),
-                                DataColumn(label: Text("Minutes")),
-                                DataColumn(label: Text("UserID")),
-                              ],
-                              rows: workingTimeData.map((record) {
-                                Timestamp timestamp = record['date'];
-                                DateTime date = timestamp.toDate();
-                                return DataRow(
-                                  cells: [
-                                    DataCell(Text(DateFormat.yMMMd()
-                                        .add_jm()
-                                        .format(date))),
-                                    DataCell(Text(record['differenceInHours']
-                                        .toString())),
-                                    DataCell(Text(record['differenceInMinutes']
-                                        .toString())),
-                                    DataCell(Text(record['userId'].toString())),
-                                  ],
-                                );
-                              }).toList(),
+                            child: SingleChildScrollView(
+                              child: DataTable(
+                                columns: [
+                                  DataColumn(label: Text("Date & Time")),
+                                  DataColumn(label: Text("Start Time")),
+                                  DataColumn(label: Text("End Time")),
+                                  DataColumn(label: Text("Hours")),
+                                  DataColumn(label: Text("Minutes")),
+                                  DataColumn(label: Text("UserID")),
+                                  DataColumn(
+                                      label: Text("Edit")), // Add Edit column
+                                ],
+                                rows: workingTimeData.map((record) {
+                                  Timestamp timestamp = record['date'];
+                                  DateTime date = timestamp.toDate();
+                                  Timestamp? startTime = record['startTime'];
+                                  Timestamp? endTime = record['endTime'];
+
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(
+                                          DateFormat('MMMM d, yyyy h:mm:ss a')
+                                              .format(date))),
+                                      DataCell(Text(startTime != null
+                                          ? DateFormat('MMMM d, yyyy h:mm:ss a')
+                                              .format(startTime.toDate())
+                                          : 'N/A')),
+                                      DataCell(Text(endTime != null
+                                          ? DateFormat('MMMM d, yyyy h:mm:ss a')
+                                              .format(endTime.toDate())
+                                          : 'N/A')),
+                                      DataCell(Text(record['differenceInHours']
+                                          .toString())),
+                                      DataCell(Text(
+                                          record['differenceInMinutes']
+                                              .toString())),
+                                      DataCell(
+                                          Text(record['userId'].toString())),
+                                      DataCell(
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {
+                                            // Start editing
+                                            setState(() {
+                                              documentIdToEdit = record['id'];
+                                              editedStartTime =
+                                                  startTime?.toDate();
+                                              editedEndTime = endTime?.toDate();
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
                             ),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
-                            "Total Hours: ${totalHours.toStringAsFixed(2)}",
+                            "Total Hours: $hours hours $minutes minutes",
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -220,6 +322,61 @@ class _WorkingTimeScreenState extends State<WorkingTimeScreen> {
                           },
                           child: Text('Download as PDF'),
                         ),
+                        if (documentIdToEdit != null) ...[
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Text("Edit Start Time:"),
+                                TextField(
+                                  readOnly: true, // Prevent manual input
+                                  onTap: () async {
+                                    DateTime? newStartTime =
+                                        await showDateTimePicker(
+                                            context, editedStartTime);
+                                    if (newStartTime != null) {
+                                      setState(() {
+                                        editedStartTime = newStartTime;
+                                      });
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText:
+                                        DateFormat('MMMM d, yyyy h:mm:ss a')
+                                            .format(editedStartTime!),
+                                  ),
+                                ),
+                                Text("Edit End Time:"),
+                                TextField(
+                                  readOnly: true, // Prevent manual input
+                                  onTap: () async {
+                                    DateTime? newEndTime =
+                                        await showDateTimePicker(
+                                            context, editedEndTime);
+                                    if (newEndTime != null) {
+                                      setState(() {
+                                        editedEndTime = newEndTime;
+                                      });
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText:
+                                        DateFormat('MMMM d, yyyy h:mm:ss a')
+                                            .format(editedEndTime!),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (documentIdToEdit != null) {
+                                      _updateWorkingTime(documentIdToEdit!);
+                                    }
+                                  },
+                                  child: Text('Update Times'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     );
                   }
@@ -229,5 +386,28 @@ class _WorkingTimeScreenState extends State<WorkingTimeScreen> {
         ],
       ),
     );
+  }
+
+  Future<DateTime?> showDateTimePicker(
+      BuildContext context, DateTime? initialDate) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(initialDate ?? DateTime.now()),
+      );
+
+      if (pickedTime != null) {
+        return DateTime(pickedDate.year, pickedDate.month, pickedDate.day,
+            pickedTime.hour, pickedTime.minute);
+      }
+    }
+    return null;
   }
 }

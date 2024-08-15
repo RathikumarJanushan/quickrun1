@@ -142,6 +142,7 @@ class BrakePage extends StatelessWidget {
 
   Future<void> _cal(String userId) async {
     try {
+      // Retrieve the start time from Firestore
       DocumentSnapshot startTimeSnapshot = await FirebaseFirestore.instance
           .collection('StartTime')
           .doc(userId)
@@ -152,21 +153,28 @@ class BrakePage extends StatelessWidget {
         return;
       }
 
+      // Extract and format the start time
       Timestamp startTimeTimestamp = startTimeSnapshot['startTime'];
       DateTime formattedStartTime = DateTime.fromMillisecondsSinceEpoch(
           startTimeTimestamp.seconds * 1000);
 
+      // Capture the current time as the end time
       DateTime currentTime = DateTime.now();
       Duration difference = currentTime.difference(formattedStartTime);
 
+      // Save the start time, end time, and calculated working time to Firestore
       await FirebaseFirestore.instance.collection('workingtime').add({
         'userId': userId,
-        'date': DateTime.now(),
+        'date': currentTime, // Record the date/time of the entry
+        'startTime': formattedStartTime,
+        'endTime': currentTime,
         'differenceInHours': difference.inHours,
-        'differenceInMinutes': difference.inMinutes.remainder(60)
+        'differenceInMinutes': difference.inMinutes.remainder(60),
       });
 
+      // Log the times and duration for debugging
       print('Start Time: $formattedStartTime');
+      print('End Time: $currentTime');
       print(
           'Working Time: ${difference.inHours} hours and ${difference.inMinutes.remainder(60)} minutes');
     } catch (error) {
